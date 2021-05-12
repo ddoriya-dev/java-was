@@ -34,7 +34,6 @@ public class HttpServer implements Runnable {
 				while (true) {
 					try {
 						Socket request = server.accept();
-						logger.info("Host : " + request.getInetAddress().getHostName());
 						pool.submit(new RequestProcessor(INDEX_FILE, request));
 					} catch (IOException ex) {
 						logger.error("Error accepting connection", ex);

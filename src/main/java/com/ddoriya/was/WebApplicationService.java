@@ -5,12 +5,9 @@
  */
 package com.ddoriya.was;
 
-import com.ddoriya.was.config.WebConfig;
+import com.ddoriya.was.config.WebConfigParser;
 import com.ddoriya.was.constants.WebConfigConstants;
 import com.ddoriya.was.server.HttpServer;
-import com.ddoriya.was.server.RequestProcessor;
-import com.ddoriya.was.util.FileResourcesUtils;
-import com.ddoriya.was.util.JsonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -18,10 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 
 /**
  * @author 이상준
@@ -34,7 +29,7 @@ public class WebApplicationService {
 	private JSONObject httpConfig;
 
 	public WebApplicationService() throws URISyntaxException, IOException {
-		this.httpConfig = new WebConfig().getHttpConfig();
+		this.httpConfig = new WebConfigParser().getHttpConfig();
 	}
 
 	public void start() {
