@@ -1,4 +1,4 @@
-package com.ddoriya.was;
+package com.ddoriya.was.server;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 public class RequestProcessor implements Runnable {
 	private final static Logger logger = Logger.getLogger(RequestProcessor.class.getCanonicalName());
+
 	private File rootDirectory;
 	private String indexFileName = "index.html";
 	private Socket connection;
