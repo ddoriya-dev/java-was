@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 /**
  * @author 이상준
@@ -20,11 +21,12 @@ public class WebApplication {
 
 	private static final String CONFIG_FILE_NAME = "http-conf.json";
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, URISyntaxException {
 		System.out.println("Start!!");
-		File docroot = new File(FileResourcesUtils.getResource(CONFIG_FILE_NAME).toString());
+		System.out.println(FileResourcesUtils.getFileFromResource(CONFIG_FILE_NAME));
+		File docroot = FileResourcesUtils.getFileFromResource(CONFIG_FILE_NAME);
 		System.out.println("!");
-		HttpServer webserver = new HttpServer(docroot, 80);
+		HttpServer webserver = new HttpServer(8081);
 		webserver.start();
 	}
 }

@@ -17,15 +17,9 @@ public class HttpServer {
 	private static Logger logger = LoggerFactory.getLogger(WebApplication.class.getName());
 	private static final int NUM_THREADS = 50;
 	private static final String INDEX_FILE = "index.html";
-	private final File rootDirectory;
 	private final int port;
 
-	public HttpServer(File rootDirectory, int port) throws IOException {
-		if (!rootDirectory.isDirectory()) {
-			throw new IOException(rootDirectory
-					+ " does not exist as a directory");
-		}
-		this.rootDirectory = rootDirectory;
+	public HttpServer(int port) {
 		this.port = port;
 	}
 
@@ -33,11 +27,10 @@ public class HttpServer {
 		ForkJoinPool pool = new ForkJoinPool(NUM_THREADS);
 		try (ServerSocket server = new ServerSocket(port)) {
 			logger.info("Accepting connections on port " + server.getLocalPort());
-			logger.info("Document Root: " + rootDirectory);
 			while (true) {
 				try {
 					Socket request = server.accept();
-					Runnable r = new RequestProcessor(rootDirectory, INDEX_FILE, request);
+					Runnable r = new RequestProcessor(INDEX_FILE, request);
 					pool.submit(r);
 				} catch (IOException ex) {
 					logger.error("Error accepting connection", ex);

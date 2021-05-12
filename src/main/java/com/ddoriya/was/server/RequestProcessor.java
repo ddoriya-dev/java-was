@@ -11,20 +11,10 @@ import java.util.logging.Logger;
 public class RequestProcessor implements Runnable {
 	private final static Logger logger = Logger.getLogger(RequestProcessor.class.getCanonicalName());
 
-	private File rootDirectory;
 	private String indexFileName = "index.html";
 	private Socket connection;
 
-	public RequestProcessor(File rootDirectory, String indexFileName, Socket connection) {
-		if (rootDirectory.isFile()) {
-			throw new IllegalArgumentException(
-					"rootDirectory must be a directory, not a file");
-		}
-		try {
-			rootDirectory = rootDirectory.getCanonicalFile();
-		} catch (IOException ex) {
-		}
-		this.rootDirectory = rootDirectory;
+	public RequestProcessor(String indexFileName, Socket connection) {
 		if (indexFileName != null)
 			this.indexFileName = indexFileName;
 		this.connection = connection;
@@ -33,7 +23,7 @@ public class RequestProcessor implements Runnable {
 	@Override
 	public void run() {
 		// for security checks
-		String root = rootDirectory.getPath();
+		String root = "/test";
 		try {
 			OutputStream raw = new BufferedOutputStream(connection.getOutputStream());
 			Writer out = new OutputStreamWriter(raw);
@@ -58,7 +48,7 @@ public class RequestProcessor implements Runnable {
 				if (tokens.length > 2) {
 					version = tokens[2];
 				}
-				File theFile = new File(rootDirectory, fileName.substring(1, fileName.length()));
+				File theFile = new File("/test", fileName.substring(1, fileName.length()));
 				if (theFile.canRead()
 // Don't let clients outside the document root
 						&& theFile.getCanonicalPath().startsWith(root)) {
