@@ -1,0 +1,10 @@
+{
+  "VirtualHost": [
+    {
+      "ServerName": "jun.com",
+      "ServerPort": "8081",
+      "DocumentRoot": "/home/root/",
+      "ErrorLog": "/logs/error.log"
+    }
+  ]
+}
