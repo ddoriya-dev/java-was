@@ -1,16 +1,20 @@
 {
-  "virtualHosts": [
+  "virtualServers": [
     {
-      "serverName": "jun1.com",
-      "serverPort": "8081",
-      "documentRoot": "/home/jun1/",
-      "errorLogPath": "/home/jun1/logs/error.log"
-    },
-    {
-      "serverName": "jun2.com",
-      "serverPort": "8082",
-      "documentRoot": "/home/jun2/",
-      "errorLogPath": "/home/jun2/logs/error.log"
+      "port": "8785",
+      "virtualHosts": [
+        {
+          "serverName": "jun1.com",
+          "documentRoot": "/home/jun1/",
+          "errorLogPath": "/home/jun1/logs/error.log"
+        },
+        {
+          "serverName": "jun2.com",
+          "documentRoot": "/home/jun2/",
+          "errorLogPath": "/home/jun2/logs/error.log"
+        }
+      ]
     }
+
   ]
 }
