@@ -11,18 +11,18 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
+import java.util.Date;
 
 /**
  * @author 이상준
  */
 public class HttpResponse {
-	private Socket connection;
 	private Writer out;
 	private OutputStream raw;
 
-	public HttpResponse(Socket connection) throws IOException {
-		this.connection = connection;
+	private String contentType = "text/html; charset=utf-8";
 
+	public HttpResponse(Socket connection) throws IOException {
 		raw = new BufferedOutputStream(connection.getOutputStream());
 		out = new OutputStreamWriter(raw);
 	}
@@ -37,5 +37,23 @@ public class HttpResponse {
 
 	public void writerClose() throws IOException {
 		out.close();
+	}
+
+	public HttpResponse setContentType(String contentType) {
+		this.contentType = contentType;
+		return this;
+	}
+
+	public void setSendHeader(String version, String responseCode, int length)
+			throws IOException {
+		if (version.startsWith("HTTP/")) {
+			out.write("HTTP/1.1 " + responseCode + "\r\n");
+			Date now = new Date();
+			out.write("Date: " + now + "\r\n");
+			out.write("Server: JHTTP 2.0\r\n");
+			out.write("Content-length: " + length + "\r\n");
+			out.write("Content-type: " + contentType + "\r\n\r\n");
+			out.flush();
+		}
 	}
 }

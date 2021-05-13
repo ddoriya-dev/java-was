@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -16,7 +15,6 @@ import java.util.concurrent.Executors;
 public class HttpServer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(HttpServer.class.getName());
 	private static final int NUM_THREADS = 50;
-	private static final String INDEX_FILE = "index.html";
 
 	private static JSONObject config;
 

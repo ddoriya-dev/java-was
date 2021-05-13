@@ -1,18 +1,18 @@
 package com.ddoriya.was.server;
 
 import com.ddoriya.was.constants.HttpMethodCode;
+import com.ddoriya.was.constants.HttpResponseCode;
 import com.ddoriya.was.constants.WebConfigConstants;
+import com.ddoriya.was.server.view.ErrorPageView;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.Socket;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.util.Date;
 
 public class RequestProcessor implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(RequestProcessor.class.getName());
@@ -23,73 +23,35 @@ public class RequestProcessor implements Runnable {
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
 
-	public RequestProcessor(JSONArray virtualHosts, Socket connection) throws Exception {
+	public RequestProcessor(JSONArray virtualHosts, Socket connection) {
 		if (virtualHosts != null) {
 			this.virtualHosts = virtualHosts;
 		} else {
-			throw new Exception("11");
+			throw new IllegalArgumentException("is not virtualHosts");
 		}
 		this.connection = connection;
 	}
 
 	@Override
 	public void run() {
-		// for security checks
 		try {
 			httpRequest = new HttpRequest(connection, virtualHosts);
 			httpResponse = new HttpResponse(connection);
 
 			logger.info(connection.getRemoteSocketAddress() + " " + httpRequest.getRequestList());
-			getInitializedRouter();
-//			if (method.equals("GET")) {
-//				String fileName = HttpUtils.getHttpUrl(requestList.get(0));
-//				if (fileName.endsWith("/")) {
-//					fileName += indexFileName;
-//				}
-//				String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
-//				version = HttpUtils.getHttpVersion(requestList.get(0));
-//				File theFile = new File("/test", fileName.substring(1));
-//
-//				if (theFile.canRead() && theFile.getCanonicalPath().startsWith(root)) {
-//					byte[] theData = Files.readAllBytes(theFile.toPath());
-//					if (version.startsWith("HTTP/")) { // send a MIME header
-//						sendHeader(out, "HTTP/1.0 200 OK", contentType, theData.length);
-//					}
-//					// send the file; it may be an image or other binary data
-//					// so use the underlying output stream
-//					// instead of the writer
-//					raw.write(theData);
-//					raw.flush();
-//				} else {
-//					// can't find the file
-//					String body = new StringBuilder("<HTML>\r\n")
-//							.append("<HEAD><TITLE>File Not Found</TITLE>\r\n")
-//							.append("</HEAD>\r\n")
-//							.append("<BODY>")
-//							.append("<H1>HTTP Error 404: File Not Found</H1>\r\n")
-//							.append("</BODY></HTML>\r\n")
-//							.toString();
-//					if (version.startsWith("HTTP/")) { // send a MIME header
-//						sendHeader(out, "HTTP/1.0 404 File Not Found", "text/html; charset=utf-8", body.length());
-//					}
-//					out.write(body);
-//					out.flush();
-//				}
-//			} else {
-//				// method does not equal "GET"
-//				String body = new StringBuilder("<HTML>\r\n").append("<HEAD><TITLE>Not Implemented</TITLE>\r\n").append("</HEAD>\r\n")
-//						.append("<BODY>")
-//						.append("<H1>HTTP Error 501: Not Implemented</H1>\r\n")
-//						.append("</BODY></HTML>\r\n").toString();
-//				if (version.startsWith("HTTP/")) { // send a MIME header
-//					sendHeader(out, "HTTP/1.0 501 Not Implemented",
-//							"text/html; charset=utf-8", body.length());
-//				}
-//				out.write(body);
-//				out.flush();
-//			}
+
+			if (httpRequest.isHttpConfig()) {
+				getInitializedRouter();
+			} else {
+				new ErrorPageView().setHttpRequest(httpRequest)
+						.setHttpResponse(httpResponse)
+						.errorPageView(null, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
+			}
+
 		} catch (IOException ex) {
 			logger.error("Error talking to " + connection.getRemoteSocketAddress(), ex);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 		} finally {
 			try {
 				connection.close();
@@ -111,15 +73,10 @@ public class RequestProcessor implements Runnable {
 			case HttpMethodCode.DELETE:
 			case HttpMethodCode.OPTIONS:
 			case HttpMethodCode.TRACE:
-				String body = new StringBuilder("<HTML>\r\n").append("<HEAD><TITLE>Not Implemented</TITLE>\r\n").append("</HEAD>\r\n")
-						.append("<BODY>")
-						.append("<H1>HTTP Error 501: Not Implemented</H1>\r\n")
-						.append("</BODY></HTML>\r\n").toString();
-				if (httpRequest.getHttpVersion().startsWith("HTTP/")) { // send a MIME header
-					sendHeader(httpResponse.getOut(), "HTTP/1.0 501 Not Implemented",
-							"text/html; charset=utf-8", body.length());
-				}
-				httpResponse.getOut().write(body);
+				String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
+				new ErrorPageView().setHttpRequest(httpRequest)
+						.setHttpResponse(httpResponse)
+						.errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
 				break;
 		}
 		httpResponse.writerClose();
@@ -127,47 +84,32 @@ public class RequestProcessor implements Runnable {
 
 	private void get() throws IOException {
 		String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
-		String fileName = httpRequest.getHttpUrl();
-		if (fileName.endsWith("/")) {
-			fileName += indexFileName;
-		}
-		String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
-		String version = httpRequest.getHttpVersion();
-		File theFile = new File(rootPath, fileName.substring(1));
 
-		if (theFile.canRead() && theFile.getCanonicalPath().startsWith(rootPath)) {
-			byte[] theData = Files.readAllBytes(theFile.toPath());
-			if (version.startsWith("HTTP/")) { // send a MIME header
-				sendHeader(httpResponse.getOut(), "HTTP/1.0 200 OK", contentType, theData.length);
+		try {
+			String fileName = httpRequest.getHttpUrl();
+			if (fileName.endsWith("/")) {
+				fileName += indexFileName;
 			}
-			httpResponse.getRaw().write(theData);
-			httpResponse.getRaw().flush();
-		} else {
-			// can't find the file
-			String body = new StringBuilder("<HTML>\r\n")
-					.append("<HEAD><TITLE>File Not Found</TITLE>\r\n")
-					.append("</HEAD>\r\n")
-					.append("<BODY>")
-					.append("<H1>HTTP Error 404: File Not Found</H1>\r\n")
-					.append("</BODY></HTML>\r\n")
-					.toString();
-			if (version.startsWith("HTTP/")) { // send a MIME header
-				sendHeader(httpResponse.getOut(), "HTTP/1.0 404 File Not Found", "text/html; charset=utf-8", body.length());
-			}
-			httpResponse.getOut().write(body);
-			httpResponse.getOut().flush();
-		}
-	}
+			String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
+			File theFile = new File(rootPath, fileName.substring(1));
 
-	private void sendHeader(Writer out, String responseCode, String contentType, int length)
-			throws IOException {
-		out.write(responseCode + "\r\n");
-		Date now = new Date();
-		out.write("Date: " + now + "\r\n");
-		out.write("Server: JHTTP 2.0\r\n");
-		out.write("Content-length: " + length + "\r\n");
-		out.write("Content-type: " + contentType + "\r\n\r\n");
-		out.flush();
+			if (theFile.canRead() && theFile.getCanonicalPath().replaceAll("\\\\", "/").startsWith(rootPath)) {
+				byte[] theData = Files.readAllBytes(theFile.toPath());
+				httpResponse.setContentType(contentType)
+						.setSendHeader(httpRequest.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
+				httpResponse.getRaw().write(theData);
+				httpResponse.getRaw().flush();
+			} else {
+				new ErrorPageView().setHttpRequest(httpRequest)
+						.setHttpResponse(httpResponse)
+						.errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			new ErrorPageView().setHttpRequest(httpRequest)
+					.setHttpResponse(httpResponse)
+					.errorPageView(rootPath, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

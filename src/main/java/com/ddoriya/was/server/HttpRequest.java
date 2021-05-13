@@ -20,12 +20,10 @@ import java.util.List;
  * @author 이상준
  */
 public class HttpRequest {
-	private Socket connection;
 	private List<String> requestList;
 	private JSONArray httpConfigs;
 
 	public HttpRequest(Socket connection, JSONArray httpConfigs) throws IOException {
-		this.connection = connection;
 		this.httpConfigs = httpConfigs;
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -88,5 +86,9 @@ public class HttpRequest {
 			throw new IllegalArgumentException("http text not found!");
 		}
 
+	}
+
+	public boolean isHttpConfig() {
+		return getJsonHttpConfig() != null;
 	}
 }

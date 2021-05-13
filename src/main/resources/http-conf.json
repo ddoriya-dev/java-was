@@ -5,12 +5,18 @@
       "virtualHosts": [
         {
           "serverName": "dev.techhub.co.kr",
-          "documentRoot": "C:\\home1\\was\\test1",
+          "documentRoot": "C:/home1/was/test1",
+          "errorDocument_403": "/403.html",
+          "errorDocument_404": "/404.html",
+          "errorDocument_500": "/500.html",
           "errorLogPath": "/home/jun1/logs/error.log"
         },
         {
           "serverName": "dev.gausad.com",
-          "documentRoot": "C:\\home1\\was\\test2",
+          "documentRoot": "C:/home1/was/test2",
+          "errorDocument_403": "/403.html",
+          "errorDocument_404": "/404.html",
+          "errorDocument_500": "/500.html",
           "errorLogPath": "/home/jun2/logs/error.log"
         }
       ]
