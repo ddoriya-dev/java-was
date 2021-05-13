@@ -4,7 +4,7 @@
       "port": "8081",
       "virtualHosts": [
         {
-          "serverName": "dev.techhub.co.kr",
+          "serverName": "test1.com",
           "documentRoot": "C:/home1/was/test1",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
@@ -12,7 +12,7 @@
           "errorLogPath": "/home/jun1/logs/error.log"
         },
         {
-          "serverName": "dev.gausad.com",
+          "serverName": "test2.com",
           "documentRoot": "C:/home1/was/test2",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
@@ -22,10 +22,10 @@
       ]
     },
     {
-      "port": "8183",
+      "port": "8082",
       "virtualHosts": [
         {
-          "serverName": "dev.techhub.co.kr",
+          "serverName": "test1.com",
           "documentRoot": "C:/home1/was/test1",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
@@ -33,7 +33,7 @@
           "errorLogPath": "/home/jun1/logs/error.log"
         },
         {
-          "serverName": "dev.gausad.com",
+          "serverName": "test2.com",
           "documentRoot": "C:/home1/was/test2",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",

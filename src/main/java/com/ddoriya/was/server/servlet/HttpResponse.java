@@ -1,9 +1,7 @@
 /*
  * @(#) HttpResponse.java 2021. 05. 13.
- *
- * Copyright 2021. PlayD Corp. All rights Reserved.
  */
-package com.ddoriya.was.server;
+package com.ddoriya.was.server.servlet;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -17,12 +15,15 @@ import java.util.Date;
  * @author 이상준
  */
 public class HttpResponse {
+	private Socket connection;
 	private Writer out;
 	private OutputStream raw;
 
 	private String contentType = "text/html; charset=utf-8";
 
 	public HttpResponse(Socket connection) throws IOException {
+		this.connection = connection;
+
 		raw = new BufferedOutputStream(connection.getOutputStream());
 		out = new OutputStreamWriter(raw);
 	}
@@ -55,5 +56,15 @@ public class HttpResponse {
 			out.write("Content-type: " + contentType + "\r\n\r\n");
 			out.flush();
 		}
+	}
+
+	public void setSendHeader(String responseCode)
+			throws IOException {
+		out.write("HTTP/1.1 " + responseCode + "\r\n");
+		Date now = new Date();
+		out.write("Date: " + now + "\r\n");
+		out.write("Server: JHTTP 2.0\r\n");
+		out.write("Content-type: " + contentType + "\r\n\r\n");
+		out.flush();
 	}
 }

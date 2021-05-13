@@ -1,7 +1,5 @@
 /*
  * @(#) FileResourcesUtils.java 2021. 05. 12.
- *
- * Copyright 2021. PlayD Corp. All rights Reserved.
  */
 package com.ddoriya.was.util;
 

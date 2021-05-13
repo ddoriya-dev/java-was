@@ -13,12 +13,12 @@ import java.net.URISyntaxException;
 /**
  * @author 이상준
  */
-public class WebApplication {
-	private static Logger logger = LoggerFactory.getLogger(WebApplication.class.getName());
+public class Application {
+	private static Logger logger = LoggerFactory.getLogger(Application.class.getName());
 
 	public static void main(String[] args) throws URISyntaxException, IOException {
-		logger.debug("시작!!");
-		WebApplicationService webApplicationService = new WebApplicationService();
-		webApplicationService.start();
+		logger.debug("WebApplication Start");
+		WebApplicationServer webApplicationServer = new WebApplicationServer();
+		webApplicationServer.start();
 	}
 }

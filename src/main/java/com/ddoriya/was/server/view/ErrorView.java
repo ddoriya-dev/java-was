@@ -5,8 +5,10 @@ package com.ddoriya.was.server.view;
 
 import com.ddoriya.was.WasValidator;
 import com.ddoriya.was.constants.HttpResponseCode;
-import com.ddoriya.was.server.HttpRequest;
-import com.ddoriya.was.server.HttpResponse;
+import com.ddoriya.was.server.servlet.HttpRequest;
+import com.ddoriya.was.server.servlet.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,24 +18,27 @@ import java.nio.file.Files;
 /**
  * @author 이상준
  */
-public class ErrorPageView {
+public class ErrorView {
+	private static Logger logger = LoggerFactory.getLogger(ErrorView.class.getName());
+
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
 
-	public ErrorPageView() {
+	public ErrorView() {
 	}
 
-	public ErrorPageView setHttpRequest(HttpRequest httpRequest) {
+	public ErrorView setHttpRequest(HttpRequest httpRequest) {
 		this.httpRequest = httpRequest;
 		return this;
 	}
 
-	public ErrorPageView setHttpResponse(HttpResponse httpResponse) {
+	public ErrorView setHttpResponse(HttpResponse httpResponse) {
 		this.httpResponse = httpResponse;
 		return this;
 	}
 
 	public void errorPageView(String rootPath, HttpResponseCode httpResponseCode) throws IOException {
+		logger.error("HOSTNAME : {}:{} HTTP STATUS CODE : {}", httpRequest.getHostName(), httpRequest.getPort(), httpResponseCode.getValue());
 		if (rootPath == null || WasValidator.isJsonKeyNullValid(httpRequest.getJsonHttpConfig(), httpResponseCode.getDocument())) {
 			notPageView(httpResponseCode);
 			return;

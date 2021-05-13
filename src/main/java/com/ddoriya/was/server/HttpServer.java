@@ -1,3 +1,6 @@
+/*
+ * @(#) HttpServer.java 2021. 05. 13.
+ */
 package com.ddoriya.was.server;
 
 
@@ -12,6 +15,9 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * @author 이상준
+ */
 public class HttpServer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(HttpServer.class.getName());
 	private static final int NUM_THREADS = 50;
@@ -28,13 +34,15 @@ public class HttpServer implements Runnable {
 			ExecutorService pool = Executors.newFixedThreadPool(NUM_THREADS);
 			int port = config.getInt(WebConfigConstants.PORT);
 			try (ServerSocket server = new ServerSocket(port)) {
-				logger.info("Accepting connections on port " + server.getLocalPort());
+				logger.info("Accepting connections on port : {}", server.getLocalPort());
 				while (true) {
 					try {
 						Socket request = server.accept();
-						pool.submit(new RequestProcessor(config.getJSONArray(WebConfigConstants.VIRTUAL_HOSTS), request));
+						pool.submit(new RequestProcessor(config, request));
 					} catch (IOException ex) {
 						logger.error("Error accepting connection", ex);
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
 					}
 				}
 			}

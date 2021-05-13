@@ -1,11 +1,17 @@
+/*
+ * @(#) RequestProcessor.java 2021. 05. 13.
+ */
 package com.ddoriya.was.server;
 
 import com.ddoriya.was.WasValidator;
 import com.ddoriya.was.constants.HttpMethodCode;
 import com.ddoriya.was.constants.HttpResponseCode;
 import com.ddoriya.was.constants.WebConfigConstants;
-import com.ddoriya.was.server.view.ErrorPageView;
-import org.json.JSONArray;
+import com.ddoriya.was.server.service.Hello;
+import com.ddoriya.was.server.servlet.HttpRequest;
+import com.ddoriya.was.server.servlet.HttpResponse;
+import com.ddoriya.was.server.view.ErrorView;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,18 +21,22 @@ import java.net.Socket;
 import java.net.URLConnection;
 import java.nio.file.Files;
 
+/**
+ * @author 이상준
+ */
 public class RequestProcessor implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(RequestProcessor.class.getName());
 
-	private JSONArray virtualHosts;
+	private JSONObject config;
 	private String indexFileName = "index.html";
 	private Socket connection;
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
+	private String rootPath;
 
-	public RequestProcessor(JSONArray virtualHosts, Socket connection) {
-		if (virtualHosts != null) {
-			this.virtualHosts = virtualHosts;
+	public RequestProcessor(JSONObject config, Socket connection) {
+		if (config != null) {
+			this.config = config;
 		} else {
 			throw new IllegalArgumentException("is not virtualHosts");
 		}
@@ -36,15 +46,16 @@ public class RequestProcessor implements Runnable {
 	@Override
 	public void run() {
 		try {
-			httpRequest = new HttpRequest(connection, virtualHosts);
+			httpRequest = new HttpRequest(connection, config);
 			httpResponse = new HttpResponse(connection);
 
-			logger.info(connection.getRemoteSocketAddress() + " " + httpRequest.getRequestList());
+			logger.info("{} : {}", connection.getRemoteSocketAddress(), httpRequest.getRequestList().toString());
 
 			if (httpRequest.isHttpConfig()) {
+				this.rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
 				getInitializedRouter();
 			} else {
-				new ErrorPageView().setHttpRequest(httpRequest)
+				new ErrorView().setHttpRequest(httpRequest)
 						.setHttpResponse(httpResponse)
 						.errorPageView(null, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
 			}
@@ -75,48 +86,73 @@ public class RequestProcessor implements Runnable {
 			case HttpMethodCode.OPTIONS:
 			case HttpMethodCode.TRACE:
 				String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
-				new ErrorPageView().setHttpRequest(httpRequest)
+				new ErrorView().setHttpRequest(httpRequest)
 						.setHttpResponse(httpResponse)
 						.errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
 				break;
 		}
+
 		httpResponse.writerClose();
 	}
 
 	private void get() throws IOException {
-		String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
-
 		try {
-			String url = httpRequest.getHttpUrl();
-			if (url.endsWith("/")) {
-				url += indexFileName;
-			}
+			//URL 매핑
+			if (!isUrlMapping()) {
+				String url = httpRequest.getHttpUrl();
+				if (url.endsWith("/")) {
+					url += indexFileName;
+				}
 
-			File file = new File(rootPath, url.substring(1));
-			if (WasValidator.isExeExtensionValid(file.getName()) || WasValidator.isParentPathValid(url)) {
-				new ErrorPageView().setHttpRequest(httpRequest)
-						.setHttpResponse(httpResponse)
-						.errorPageView(rootPath, HttpResponseCode.SC_FORBIDDEN);
-				return;
-			} else if (!WasValidator.isFileAuth(rootPath, file)) {
-				new ErrorPageView().setHttpRequest(httpRequest)
-						.setHttpResponse(httpResponse)
-						.errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
-				return;
-			}
+				File file = new File(rootPath, url.substring(1));
+				if (WasValidator.isExeExtensionValid(file.getName()) || WasValidator.isParentPathValid(url)) {
+					new ErrorView().setHttpRequest(httpRequest)
+							.setHttpResponse(httpResponse)
+							.errorPageView(rootPath, HttpResponseCode.SC_FORBIDDEN);
+					return;
+				} else if (!WasValidator.isFileAuth(rootPath, file)) {
+					new ErrorView().setHttpRequest(httpRequest)
+							.setHttpResponse(httpResponse)
+							.errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
+					return;
+				}
 
-			String contentType = URLConnection.getFileNameMap().getContentTypeFor(url);
-			byte[] theData = Files.readAllBytes(file.toPath());
-			httpResponse.setContentType(contentType)
-					.setSendHeader(httpRequest.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
-			httpResponse.getRaw().write(theData);
-			httpResponse.getRaw().flush();
+				String contentType = URLConnection.getFileNameMap().getContentTypeFor(url);
+				byte[] theData = Files.readAllBytes(file.toPath());
+				httpResponse.setContentType(contentType)
+						.setSendHeader(httpRequest.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
+				httpResponse.getRaw().write(theData);
+				httpResponse.getRaw().flush();
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			new ErrorPageView().setHttpRequest(httpRequest)
+			new ErrorView().setHttpRequest(httpRequest)
 					.setHttpResponse(httpResponse)
 					.errorPageView(rootPath, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
 		}
+
+
+	}
+
+	private boolean isUrlMapping() throws Exception {
+		boolean isUrl = false;
+
+		String url = httpRequest.getHttpUrl();
+		if (httpRequest.getHttpUrl().contains("?")) {
+			url = url.substring(0, url.indexOf("?"));
+		}
+
+		logger.info("URL {}", url);
+		if (url.equals("/Hello")) {
+			httpResponse.setSendHeader(HttpResponseCode.SC_OK.getValue());
+
+			Hello hello = new Hello();
+			hello.service(httpRequest, httpResponse);
+
+			isUrl = true;
+		}
+
+		return isUrl;
 	}
 
 }
