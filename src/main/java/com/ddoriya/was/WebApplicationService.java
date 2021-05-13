@@ -5,9 +5,10 @@
  */
 package com.ddoriya.was;
 
-import com.ddoriya.was.config.WebConfigParser;
 import com.ddoriya.was.constants.WebConfigConstants;
 import com.ddoriya.was.server.HttpServer;
+import com.ddoriya.was.util.FileResourcesUtils;
+import com.ddoriya.was.util.JsonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -29,7 +30,8 @@ public class WebApplicationService {
 	private JSONObject httpConfig;
 
 	public WebApplicationService() throws URISyntaxException, IOException {
-		this.httpConfig = new WebConfigParser().getHttpConfig();
+		String fileName = FileResourcesUtils.getStrFromResource(CONFIG_FILE_NAME);
+		this.httpConfig = JsonUtils.parseJSONFile(fileName);
 	}
 
 	public void start() {

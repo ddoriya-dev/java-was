@@ -1,102 +1,56 @@
 package com.ddoriya.was.server;
 
-import java.io.*;
+import com.ddoriya.was.constants.HttpMethodCode;
+import com.ddoriya.was.constants.WebConfigConstants;
+import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.Socket;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class RequestProcessor implements Runnable {
-	private final static Logger logger = Logger.getLogger(RequestProcessor.class.getCanonicalName());
+	private static Logger logger = LoggerFactory.getLogger(RequestProcessor.class.getName());
 
+	private JSONArray virtualHosts;
 	private String indexFileName = "index.html";
 	private Socket connection;
+	private HttpRequest httpRequest;
+	private HttpResponse httpResponse;
 
-	public RequestProcessor(String indexFileName, Socket connection) {
-		if (indexFileName != null)
-			this.indexFileName = indexFileName;
+	public RequestProcessor(JSONArray virtualHosts, Socket connection) throws Exception {
+		if (virtualHosts != null) {
+			this.virtualHosts = virtualHosts;
+		} else {
+			throw new Exception("11");
+		}
 		this.connection = connection;
 	}
 
 	@Override
 	public void run() {
 		// for security checks
-		String root = "/test";
 		try {
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(connection.getInputStream())
-			);
-			PrintWriter out = new PrintWriter(
-					new BufferedWriter(
-							new OutputStreamWriter(connection.getOutputStream())),
-					true);
+			httpRequest = new HttpRequest(connection, virtualHosts);
+			httpResponse = new HttpResponse(connection);
 
-			String s;
-			while ((s = in.readLine()) != null) {
-				System.out.println(s);
-
-			}
-
-			out.write("HTTP/1.0 200 OK\r\n");
-			out.write("Date: Fri, 31 Dec 1999 23:59:59 GMT\r\n");
-			out.write("Server: Apache/0.8.4\r\n");
-			out.write("Content-Type: text/html\r\n");
-			out.write("Content-Length: 59\r\n");
-			out.write("Expires: Sat, 01 Jan 2000 00:59:59 GMT\r\n");
-			out.write("Last-modified: Fri, 09 Aug 1996 14:21:40 GMT\r\n");
-			out.write("\r\n");
-			out.write("<TITLE>Exemple</TITLE>");
-			out.write("<P>Ceci est une page d'exemple.</P>");
-
-			// on ferme les flux.
-			System.err.println("Connexion avec le client terminée");
-			out.close();
-			in.close();
-		} catch (IOException ex) {
-			logger.log(Level.WARNING, "Error talking to " + connection.getRemoteSocketAddress(), ex);
-		} finally {
-			try {
-				connection.close();
-			} catch (IOException ex) {
-			}
-		}
-	}
-
-//	@Override
-//	public void run() {
-//		// for security checks
-//		String root = "/test";
-//		try {
-//			OutputStream raw = new BufferedOutputStream(connection.getOutputStream());
-//			Writer out = new OutputStreamWriter(raw);
-//			Reader in = new InputStreamReader(new BufferedInputStream(connection.getInputStream()), "UTF-8");
-//			StringBuilder requestLine = new StringBuilder();
-//			while (true) {
-//				int c = in.read();
-//				if (c == '\r' || c == '\n')
-//					break;
-//				requestLine.append((char) c);
-//			}
-//
-//			String get = requestLine.toString();
-//			logger.info(connection.getRemoteSocketAddress() + " " + get);
-//			String[] tokens = get.split("\\s+");
-//			String method = tokens[0];
-//			String version = "";
+			logger.info(connection.getRemoteSocketAddress() + " " + httpRequest.getRequestList());
+			getInitializedRouter();
 //			if (method.equals("GET")) {
-//				String fileName = tokens[1];
-//				if (fileName.endsWith("/")) fileName += indexFileName;
-//				String contentType =
-//						URLConnection.getFileNameMap().getContentTypeFor(fileName);
-//				if (tokens.length > 2) {
-//					version = tokens[2];
+//				String fileName = HttpUtils.getHttpUrl(requestList.get(0));
+//				if (fileName.endsWith("/")) {
+//					fileName += indexFileName;
 //				}
-//				File theFile = new File("/test", fileName.substring(1, fileName.length()));
-//				if (theFile.canRead()
-//// Don't let clients outside the document root
-//						&& theFile.getCanonicalPath().startsWith(root)) {
+//				String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
+//				version = HttpUtils.getHttpVersion(requestList.get(0));
+//				File theFile = new File("/test", fileName.substring(1));
+//
+//				if (theFile.canRead() && theFile.getCanonicalPath().startsWith(root)) {
 //					byte[] theData = Files.readAllBytes(theFile.toPath());
 //					if (version.startsWith("HTTP/")) { // send a MIME header
 //						sendHeader(out, "HTTP/1.0 200 OK", contentType, theData.length);
@@ -134,15 +88,76 @@ public class RequestProcessor implements Runnable {
 //				out.write(body);
 //				out.flush();
 //			}
-//		} catch (IOException ex) {
-//			logger.log(Level.WARNING, "Error talking to " + connection.getRemoteSocketAddress(), ex);
-//		} finally {
-//			try {
-//				connection.close();
-//			} catch (IOException ex) {
-//			}
-//		}
-//	}
+		} catch (IOException ex) {
+			logger.error("Error talking to " + connection.getRemoteSocketAddress(), ex);
+		} finally {
+			try {
+				connection.close();
+			} catch (IOException ex) {
+				logger.error(ex.getMessage(), ex);
+			}
+		}
+	}
+
+	private void getInitializedRouter() throws IOException {
+		switch (httpRequest.getHttpMethod()) {
+			case HttpMethodCode.GET:
+				get();
+				break;
+			case HttpMethodCode.POST:
+			case HttpMethodCode.HEAD:
+			case HttpMethodCode.PUT:
+			case HttpMethodCode.PATCH:
+			case HttpMethodCode.DELETE:
+			case HttpMethodCode.OPTIONS:
+			case HttpMethodCode.TRACE:
+				String body = new StringBuilder("<HTML>\r\n").append("<HEAD><TITLE>Not Implemented</TITLE>\r\n").append("</HEAD>\r\n")
+						.append("<BODY>")
+						.append("<H1>HTTP Error 501: Not Implemented</H1>\r\n")
+						.append("</BODY></HTML>\r\n").toString();
+				if (httpRequest.getHttpVersion().startsWith("HTTP/")) { // send a MIME header
+					sendHeader(httpResponse.getOut(), "HTTP/1.0 501 Not Implemented",
+							"text/html; charset=utf-8", body.length());
+				}
+				httpResponse.getOut().write(body);
+				break;
+		}
+		httpResponse.writerClose();
+	}
+
+	private void get() throws IOException {
+		String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
+		String fileName = httpRequest.getHttpUrl();
+		if (fileName.endsWith("/")) {
+			fileName += indexFileName;
+		}
+		String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
+		String version = httpRequest.getHttpVersion();
+		File theFile = new File(rootPath, fileName.substring(1));
+
+		if (theFile.canRead() && theFile.getCanonicalPath().startsWith(rootPath)) {
+			byte[] theData = Files.readAllBytes(theFile.toPath());
+			if (version.startsWith("HTTP/")) { // send a MIME header
+				sendHeader(httpResponse.getOut(), "HTTP/1.0 200 OK", contentType, theData.length);
+			}
+			httpResponse.getRaw().write(theData);
+			httpResponse.getRaw().flush();
+		} else {
+			// can't find the file
+			String body = new StringBuilder("<HTML>\r\n")
+					.append("<HEAD><TITLE>File Not Found</TITLE>\r\n")
+					.append("</HEAD>\r\n")
+					.append("<BODY>")
+					.append("<H1>HTTP Error 404: File Not Found</H1>\r\n")
+					.append("</BODY></HTML>\r\n")
+					.toString();
+			if (version.startsWith("HTTP/")) { // send a MIME header
+				sendHeader(httpResponse.getOut(), "HTTP/1.0 404 File Not Found", "text/html; charset=utf-8", body.length());
+			}
+			httpResponse.getOut().write(body);
+			httpResponse.getOut().flush();
+		}
+	}
 
 	private void sendHeader(Writer out, String responseCode, String contentType, int length)
 			throws IOException {
@@ -154,4 +169,5 @@ public class RequestProcessor implements Runnable {
 		out.write("Content-type: " + contentType + "\r\n\r\n");
 		out.flush();
 	}
+
 }

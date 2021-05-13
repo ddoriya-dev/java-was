@@ -34,7 +34,7 @@ public class HttpServer implements Runnable {
 				while (true) {
 					try {
 						Socket request = server.accept();
-						pool.submit(new RequestProcessor(INDEX_FILE, request));
+						pool.submit(new RequestProcessor(config.getJSONArray(WebConfigConstants.VIRTUAL_HOSTS), request));
 					} catch (IOException ex) {
 						logger.error("Error accepting connection", ex);
 					}

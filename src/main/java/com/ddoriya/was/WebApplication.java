@@ -16,8 +16,6 @@ import java.net.URISyntaxException;
 public class WebApplication {
 	private static Logger logger = LoggerFactory.getLogger(WebApplication.class.getName());
 
-	private static final String CONFIG_FILE_NAME = "http-conf.json";
-
 	public static void main(String[] args) throws URISyntaxException, IOException {
 		logger.debug("시작!!");
 		WebApplicationService webApplicationService = new WebApplicationService();

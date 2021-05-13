@@ -1,16 +1,16 @@
 {
   "virtualServers": [
     {
-      "port": "8785",
+      "port": "8081",
       "virtualHosts": [
         {
-          "serverName": "jun1.com",
-          "documentRoot": "/home/jun1/",
+          "serverName": "dev.techhub.co.kr",
+          "documentRoot": "C:\\home1\\was\\test1",
           "errorLogPath": "/home/jun1/logs/error.log"
         },
         {
-          "serverName": "jun2.com",
-          "documentRoot": "/home/jun2/",
+          "serverName": "dev.gausad.com",
+          "documentRoot": "C:\\home1\\was\\test2",
           "errorLogPath": "/home/jun2/logs/error.log"
         }
       ]
