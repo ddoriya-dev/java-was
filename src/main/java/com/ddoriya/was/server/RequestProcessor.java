@@ -1,5 +1,6 @@
 package com.ddoriya.was.server;
 
+import com.ddoriya.was.WasValidator;
 import com.ddoriya.was.constants.HttpMethodCode;
 import com.ddoriya.was.constants.HttpResponseCode;
 import com.ddoriya.was.constants.WebConfigConstants;
@@ -86,24 +87,30 @@ public class RequestProcessor implements Runnable {
 		String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
 
 		try {
-			String fileName = httpRequest.getHttpUrl();
-			if (fileName.endsWith("/")) {
-				fileName += indexFileName;
+			String url = httpRequest.getHttpUrl();
+			if (url.endsWith("/")) {
+				url += indexFileName;
 			}
-			String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
-			File theFile = new File(rootPath, fileName.substring(1));
 
-			if (theFile.canRead() && theFile.getCanonicalPath().replaceAll("\\\\", "/").startsWith(rootPath)) {
-				byte[] theData = Files.readAllBytes(theFile.toPath());
-				httpResponse.setContentType(contentType)
-						.setSendHeader(httpRequest.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
-				httpResponse.getRaw().write(theData);
-				httpResponse.getRaw().flush();
-			} else {
+			File file = new File(rootPath, url.substring(1));
+			if (WasValidator.isExeExtensionValid(file.getName()) || WasValidator.isParentPathValid(url)) {
+				new ErrorPageView().setHttpRequest(httpRequest)
+						.setHttpResponse(httpResponse)
+						.errorPageView(rootPath, HttpResponseCode.SC_FORBIDDEN);
+				return;
+			} else if (!WasValidator.isFileAuth(rootPath, file)) {
 				new ErrorPageView().setHttpRequest(httpRequest)
 						.setHttpResponse(httpResponse)
 						.errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
+				return;
 			}
+
+			String contentType = URLConnection.getFileNameMap().getContentTypeFor(url);
+			byte[] theData = Files.readAllBytes(file.toPath());
+			httpResponse.setContentType(contentType)
+					.setSendHeader(httpRequest.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
+			httpResponse.getRaw().write(theData);
+			httpResponse.getRaw().flush();
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 			new ErrorPageView().setHttpRequest(httpRequest)

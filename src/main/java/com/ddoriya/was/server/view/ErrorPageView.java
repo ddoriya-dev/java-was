@@ -40,8 +40,8 @@ public class ErrorPageView {
 		}
 
 		String errorDocumentFile = httpRequest.getJsonHttpConfig().getString(httpResponseCode.getDocument());
-		File errorViewFile = new File(errorDocumentFile);
-		if (WasValidator.isFileAuth(rootPath, errorDocumentFile)) {
+		File errorViewFile = new File(rootPath, errorDocumentFile);
+		if (WasValidator.isFileAuth(rootPath, errorViewFile)) {
 			String contentType = URLConnection.getFileNameMap().getContentTypeFor(errorViewFile.getPath());
 			byte[] data = Files.readAllBytes(errorViewFile.toPath());
 			httpResponse.setContentType(contentType)
