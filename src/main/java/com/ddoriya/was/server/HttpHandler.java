@@ -86,7 +86,6 @@ public class HttpHandler implements Runnable {
 			case HttpMethodCode.DELETE:
 			case HttpMethodCode.OPTIONS:
 			case HttpMethodCode.TRACE:
-				String rootPath = request.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
 				new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
 				break;
 		}
