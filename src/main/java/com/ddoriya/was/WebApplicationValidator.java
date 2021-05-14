@@ -13,6 +13,8 @@ import java.io.IOException;
  * @author 이상준
  */
 public class WebApplicationValidator {
+	private static final String EXE_EXTENSION = "exe";
+
 	public static boolean isFileAuth(String rootPath, File file) throws IOException {
 		return file.canRead() && file.getCanonicalPath().replaceAll("\\\\", "/").startsWith(rootPath);
 	}
@@ -33,7 +35,7 @@ public class WebApplicationValidator {
 
 	public static boolean isExeExtensionValid(String fileName) {
 		String ext = fileName.substring(fileName.lastIndexOf(".") + 1).trim();
-		return "exe" .equalsIgnoreCase(ext);
+		return EXE_EXTENSION.equalsIgnoreCase(ext);
 	}
 
 	public static boolean isJsonKeyNullValid(JSONObject httpConfig, String key) {

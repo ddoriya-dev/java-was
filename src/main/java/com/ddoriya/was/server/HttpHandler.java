@@ -56,7 +56,7 @@ public class HttpHandler implements Runnable {
 
 			if (request.isHttpConfig()) {
 				this.rootPath = request.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
-				getInitializedRouter();
+				initializedRouter();
 			} else {
 				new ErrorView(request, response).errorPageView(null, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
 			}
@@ -79,7 +79,7 @@ public class HttpHandler implements Runnable {
 		}
 	}
 
-	private void getInitializedRouter() throws IOException {
+	private void initializedRouter() throws IOException {
 		switch (request.getHttpMethod()) {
 			case HttpMethodCode.GET:
 				get();
