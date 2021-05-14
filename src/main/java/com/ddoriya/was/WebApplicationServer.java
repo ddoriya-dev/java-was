@@ -20,13 +20,10 @@ import java.io.IOException;
 public class WebApplicationServer {
 	private static Logger logger = LoggerFactory.getLogger(WebApplicationServer.class.getName());
 
-	private static final String CONFIG_FILE_NAME = "http-conf.json";
 	private JSONObject httpConfig;
-	private String configFile;
 
 	public WebApplicationServer(String configFile) {
 		try {
-			this.configFile = configFile;
 			this.httpConfig = JsonUtils.parseJSONFile(configFile);
 		} catch (IOException ie) {
 			logger.error("not json file...", ie);

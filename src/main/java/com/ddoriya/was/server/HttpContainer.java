@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  */
 public class HttpContainer implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(HttpContainer.class.getName());
-	private static final int NUM_THREADS = 50;
+	private static final int THREAD_POOL_COUNT = 50;
 
 	private static JSONObject config;
 
@@ -33,7 +33,7 @@ public class HttpContainer implements Runnable {
 	@Override
 	public void run() {
 		try {
-			ExecutorService pool = Executors.newFixedThreadPool(NUM_THREADS);
+			ExecutorService pool = Executors.newFixedThreadPool(THREAD_POOL_COUNT);
 
 			//매핑 URL을 생성한다.
 			URLMapper urlMapper = new URLMapper();
