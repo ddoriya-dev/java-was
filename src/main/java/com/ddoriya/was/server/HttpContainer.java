@@ -1,10 +1,11 @@
 /*
- * @(#) HttpServer.java 2021. 05. 13.
+ * @(#) HttpContainer.java 2021. 05. 13.
  */
 package com.ddoriya.was.server;
 
 
 import com.ddoriya.was.constants.WebConfigConstants;
+import com.ddoriya.was.server.servlet.URLMapper;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,13 @@ import java.util.concurrent.Executors;
 /**
  * @author 이상준
  */
-public class HttpServer implements Runnable {
-	private static Logger logger = LoggerFactory.getLogger(HttpServer.class.getName());
+public class HttpContainer implements Runnable {
+	private static Logger logger = LoggerFactory.getLogger(HttpContainer.class.getName());
 	private static final int NUM_THREADS = 50;
 
 	private static JSONObject config;
 
-	public HttpServer(JSONObject config) {
+	public HttpContainer(JSONObject config) {
 		this.config = config;
 	}
 
@@ -32,13 +33,17 @@ public class HttpServer implements Runnable {
 	public void run() {
 		try {
 			ExecutorService pool = Executors.newFixedThreadPool(NUM_THREADS);
+
+			//매핑 URL을 생성한다.
+			URLMapper urlMapper = new URLMapper();
+
 			int port = config.getInt(WebConfigConstants.PORT);
 			try (ServerSocket server = new ServerSocket(port)) {
 				logger.info("Accepting connections on port : {}", server.getLocalPort());
 				while (true) {
 					try {
 						Socket request = server.accept();
-						pool.submit(new RequestProcessor(config, request));
+						pool.submit(new HttpHandler(config, request, urlMapper));
 					} catch (IOException ex) {
 						logger.error("Error accepting connection", ex);
 					} catch (Exception e) {

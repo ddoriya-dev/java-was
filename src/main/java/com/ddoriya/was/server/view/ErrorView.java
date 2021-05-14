@@ -24,17 +24,9 @@ public class ErrorView {
 	private HttpRequest httpRequest;
 	private HttpResponse httpResponse;
 
-	public ErrorView() {
-	}
-
-	public ErrorView setHttpRequest(HttpRequest httpRequest) {
+	public ErrorView(HttpRequest httpRequest, HttpResponse httpResponse) {
 		this.httpRequest = httpRequest;
-		return this;
-	}
-
-	public ErrorView setHttpResponse(HttpResponse httpResponse) {
 		this.httpResponse = httpResponse;
-		return this;
 	}
 
 	public void errorPageView(String rootPath, HttpResponseCode httpResponseCode) throws IOException {

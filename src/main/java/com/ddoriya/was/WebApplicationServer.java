@@ -5,7 +5,7 @@
 package com.ddoriya.was;
 
 import com.ddoriya.was.constants.WebConfigConstants;
-import com.ddoriya.was.server.HttpServer;
+import com.ddoriya.was.server.HttpContainer;
 import com.ddoriya.was.util.FileResourcesUtils;
 import com.ddoriya.was.util.JsonUtils;
 import org.json.JSONArray;
@@ -37,8 +37,9 @@ public class WebApplicationServer {
 		for (int i = 0; i < jsonVirtualServers.length(); i++) {
 			JSONObject serverConfig = (JSONObject) jsonVirtualServers.get(i);
 			try {
-				new Thread(new HttpServer(serverConfig)).start();
-				//서버생성시 sleep을 주어 thread safe하게 진행한다.
+				new Thread(new HttpContainer(serverConfig)).start();
+
+				//서버생성시 sleep을 주어 JVM HttpContainer Port를 안전하게 생성시킨다.
 				Thread.sleep(100);
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);

@@ -8,16 +8,14 @@
           "documentRoot": "C:/home1/was/test1",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
-          "errorDocument_500": "500.html",
-          "errorLogPath": "/home/jun1/logs/error.log"
+          "errorDocument_500": "500.html"
         },
         {
           "serverName": "test2.com",
           "documentRoot": "C:/home1/was/test2",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
-          "errorDocument_500": "500.html",
-          "errorLogPath": "/home/jun2/logs/error.log"
+          "errorDocument_500": "500.html"
         }
       ]
     },
@@ -29,16 +27,14 @@
           "documentRoot": "C:/home1/was/test1",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
-          "errorDocument_500": "500.html",
-          "errorLogPath": "/home/jun1/logs/error.log"
+          "errorDocument_500": "500.html"
         },
         {
           "serverName": "test2.com",
           "documentRoot": "C:/home1/was/test2",
           "errorDocument_403": "403.html",
           "errorDocument_404": "404.html",
-          "errorDocument_500": "500.html",
-          "errorLogPath": "/home/jun2/logs/error.log"
+          "errorDocument_500": "500.html"
         }
       ]
     }

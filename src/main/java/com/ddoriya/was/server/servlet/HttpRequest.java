@@ -133,6 +133,10 @@ public class HttpRequest {
 	}
 
 	public String getParameter(String key) {
-		return parametersMap.get(key);
+		if (parametersMap.containsKey(key)) {
+			return parametersMap.get(key);
+		}
+
+		return "";
 	}
 }

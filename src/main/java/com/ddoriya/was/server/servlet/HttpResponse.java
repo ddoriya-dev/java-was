@@ -15,15 +15,12 @@ import java.util.Date;
  * @author 이상준
  */
 public class HttpResponse {
-	private Socket connection;
 	private Writer out;
 	private OutputStream raw;
 
 	private String contentType = "text/html; charset=utf-8";
 
 	public HttpResponse(Socket connection) throws IOException {
-		this.connection = connection;
-
 		raw = new BufferedOutputStream(connection.getOutputStream());
 		out = new OutputStreamWriter(raw);
 	}
@@ -58,8 +55,7 @@ public class HttpResponse {
 		}
 	}
 
-	public void setSendHeader(String responseCode)
-			throws IOException {
+	public void setSendHeader(String responseCode) throws IOException {
 		out.write("HTTP/1.1 " + responseCode + "\r\n");
 		Date now = new Date();
 		out.write("Date: " + now + "\r\n");
