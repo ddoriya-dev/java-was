@@ -67,7 +67,12 @@ public class HttpHandler implements Runnable {
 			logger.error(e.getMessage(), e);
 		} finally {
 			try {
-				connection.close();
+				if (response.getOuter() != null) {
+					response.writerClose();
+				}
+				if (connection != null) {
+					connection.close();
+				}
 			} catch (IOException ex) {
 				logger.error(ex.getMessage(), ex);
 			}
@@ -89,8 +94,6 @@ public class HttpHandler implements Runnable {
 				new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
 				break;
 		}
-
-		response.writerClose();
 	}
 
 	private void get() throws IOException {
