@@ -15,7 +15,7 @@ public class FileResourcesUtils {
 	public static String getStrFromResource(String fileName) throws URISyntaxException {
 		URL resource = Thread.currentThread().getContextClassLoader().getResource(fileName);
 		if (resource == null) {
-			throw new IllegalArgumentException("file not found!");
+			throw new NullPointerException("file not found!");
 		} else {
 			return new File(resource.toURI()).getPath();
 		}

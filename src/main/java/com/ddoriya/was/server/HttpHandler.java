@@ -38,7 +38,7 @@ public class HttpHandler implements Runnable {
 
 	public HttpHandler(JSONObject config, Socket connection, URLMapper urlMapper) {
 		if (config == null) {
-			throw new IllegalArgumentException("is not virtualHosts");
+			throw new NullPointerException("is not virtualHosts");
 		}
 
 		this.config = config;
