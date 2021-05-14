@@ -63,8 +63,8 @@ public class ErrorView {
 				.append("</BODY></HTML>\r\n")
 				.toString();
 		response.setSendHeader(request.getHttpVersion(), httpResponseCode.getValue(), body.length());
-		response.getOut().write(body);
-		response.getOut().flush();
+		response.getOuter().write(body);
+		response.getOuter().flush();
 	}
 
 }

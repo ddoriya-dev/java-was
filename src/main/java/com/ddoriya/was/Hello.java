@@ -2,7 +2,7 @@
  * @(#) HelloView.java 2021. 05. 13.
  *
  */
-package com.ddoriya.was.server.service;
+package com.ddoriya.was;
 
 import com.ddoriya.was.server.servlet.HttpRequest;
 import com.ddoriya.was.server.servlet.HttpResponse;
@@ -17,7 +17,7 @@ public class Hello implements SimpleServlet {
 
 	@Override
 	public void service(HttpRequest request, HttpResponse response) throws Exception {
-		Writer writer = response.getOut();
+		Writer writer = response.getOuter();
 		writer.write("Hello, ");
 		writer.write(request.getParameter("name"));
 	}

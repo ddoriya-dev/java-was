@@ -17,7 +17,7 @@ import java.util.Map;
 public class URLMapper {
 	private static Logger logger = LoggerFactory.getLogger(URLMapper.class.getName());
 
-	private final String DEFALUT_PACKAGE = "com.ddoriya.was.server";
+	private final String DEFALUT_PACKAGE = "com.ddoriya.was";
 
 	private Map<String, String> mappingUrlMap;
 
@@ -37,7 +37,8 @@ public class URLMapper {
 	public void setMapper() {
 		mappingUrlMap = new HashMap<>();
 		mappingUrlMap.put("/Hello", "Hello");
-		mappingUrlMap.put("/service.Hello", "Hello");
+		mappingUrlMap.put("/service.Hello", "service.Hello");
+		mappingUrlMap.put("/date", "service.DateSimpleService");
 	}
 
 	private void invoke(String url, HttpRequest request, HttpResponse response) throws Exception {

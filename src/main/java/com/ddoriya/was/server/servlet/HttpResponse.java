@@ -16,18 +16,18 @@ import java.util.Date;
  * @author 이상준
  */
 public class HttpResponse {
-	private Writer out;
+	private Writer outer;
 	private OutputStream raw;
 
 	private String contentType = "text/html; charset=utf-8";
 
 	public HttpResponse(Socket connection) throws IOException {
 		raw = new BufferedOutputStream(connection.getOutputStream());
-		out = new OutputStreamWriter(raw);
+		outer = new OutputStreamWriter(raw);
 	}
 
-	public Writer getOut() {
-		return out;
+	public Writer getOuter() {
+		return outer;
 	}
 
 	public OutputStream getRaw() {
@@ -35,7 +35,7 @@ public class HttpResponse {
 	}
 
 	public void writerClose() throws IOException {
-		out.close();
+		outer.close();
 	}
 
 	public HttpResponse setContentType(String contentType) {
@@ -46,22 +46,22 @@ public class HttpResponse {
 	public void setSendHeader(String version, String responseCode, int length)
 			throws IOException {
 		if (version.startsWith("HTTP/")) {
-			out.write("HTTP/1.1 " + responseCode + "\r\n");
+			outer.write("HTTP/1.1 " + responseCode + "\r\n");
 			Date now = new Date();
-			out.write("Date: " + now + "\r\n");
-			out.write("Server: JHTTP 2.0\r\n");
-			out.write("Content-length: " + length + "\r\n");
-			out.write("Content-type: " + contentType + "\r\n\r\n");
-			out.flush();
+			outer.write("Date: " + now + "\r\n");
+			outer.write("Server: JHTTP 2.0\r\n");
+			outer.write("Content-length: " + length + "\r\n");
+			outer.write("Content-type: " + contentType + "\r\n\r\n");
+			outer.flush();
 		}
 	}
 
 	public void setSendHeader(String responseCode) throws IOException {
-		out.write("HTTP/1.1 " + responseCode + "\r\n");
+		outer.write("HTTP/1.1 " + responseCode + "\r\n");
 		Date now = new Date();
-		out.write("Date: " + now + "\r\n");
-		out.write("Server: JHTTP 2.0\r\n");
-		out.write("Content-type: " + contentType + "\r\n\r\n");
-		out.flush();
+		outer.write("Date: " + now + "\r\n");
+		outer.write("Server: JHTTP 2.0\r\n");
+		outer.write("Content-type: " + contentType + "\r\n\r\n");
+		outer.flush();
 	}
 }
