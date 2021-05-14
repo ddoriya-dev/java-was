@@ -28,8 +28,8 @@ import java.nio.file.Files;
 public class HttpHandler implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(HttpHandler.class.getName());
 
+	private final String indexFileName = "index.html";
 	private JSONObject config;
-	private String indexFileName = "index.html";
 	private Socket connection;
 	private URLMapper urlMapper;
 	private HttpRequest request;
