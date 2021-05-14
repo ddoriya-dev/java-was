@@ -1,7 +1,6 @@
 /*
  * @(#) WebApplicationTest.java 2021. 05. 14.
  *
- * Copyright 2021. PlayD Corp. All rights Reserved.
  */
 package com.ddoriya.test;
 
