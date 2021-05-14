@@ -13,5 +13,4 @@ public class WebConfigConstants {
 	static final public String VIRTUAL_HOSTS = "virtualHosts";
 	static final public String SERVER_NAME = "serverName";
 	static final public String DOCUMENT_ROOT = "documentRoot";
-	static final public String ERROR_LOG_PATH = "errorLogPath";
 }

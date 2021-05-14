@@ -5,6 +5,42 @@
 - HTTP/1.1 WebApplicationServer 서버 생성
 - SimpleServlet 따른 Service 생성
 
+##스펙
+1. HTTP/1.1 의 Host 헤더를 해석
+   * 해당 헤더를 분석하여 HttpRequest 관리
+    
+
+2. 설정 파일로 관리
+   * http-conf.json 파일 관리
+    
+
+3. 403, 404, 500 오류를 처리
+   * conf 파일을 통해 코드별 오류 처리
+    
+
+4. 다음과 같은 보안 규칙
+* 다음 규칙에 걸리면 응답 코드 403 을 반환합니다
+* HTTP_ROOT 디렉터리의 상위 디렉터리에 접근할 때
+* exe 확장자가 접근시
+
+
+5. logback 프레임워크 http://logback.qos.ch/를 이용하여 다음의 로깅 작업
+   * log 로깅 관리 진행
+    
+
+6. 간단한 WAS 를 구현
+   * SimpleServlet 구현체 구현
+   * Hello, service.Hello 클래스 구현
+    
+
+7. 현재 시각을 출력하는 SimpleServlet 구현체
+   * DateSimpleService 클래스 구현
+    
+
+8. 앞에서 구현한 여러 스펙을 검증하는 테스트 케이스 구현
+   * test 경로에 케이스 구현
+    
+
 ##Config 목록
 > 대상 config : http-conf.json
 ~~~

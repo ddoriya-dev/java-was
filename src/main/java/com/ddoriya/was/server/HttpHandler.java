@@ -67,7 +67,7 @@ public class HttpHandler implements Runnable {
 			logger.error(e.getMessage(), e);
 		} finally {
 			try {
-				if (response.getOuter() != null) {
+				if (response.getWriter() != null) {
 					response.writerClose();
 				}
 				if (connection != null) {
@@ -120,8 +120,8 @@ public class HttpHandler implements Runnable {
 				byte[] theData = Files.readAllBytes(file.toPath());
 				response.setContentType(contentType)
 						.setSendHeader(request.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
-				response.getRaw().write(theData);
-				response.getRaw().flush();
+				response.getOutputStream().write(theData);
+				response.getOutputStream().flush();
 			}
 
 		} catch (Exception e) {

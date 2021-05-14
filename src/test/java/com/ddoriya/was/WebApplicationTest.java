@@ -2,9 +2,8 @@
  * @(#) WebApplicationTest.java 2021. 05. 14.
  *
  */
-package com.ddoriya.test;
+package com.ddoriya.was;
 
-import com.ddoriya.was.WebApplicationServer;
 import com.ddoriya.was.util.FileResourcesUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

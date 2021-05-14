@@ -44,8 +44,8 @@ public class ErrorView {
 			byte[] data = Files.readAllBytes(errorViewFile.toPath());
 			response.setContentType(contentType)
 					.setSendHeader(request.getHttpVersion(), httpResponseCode.getValue(), data.length);
-			response.getRaw().write(data);
-			response.getRaw().flush();
+			response.getOutputStream().write(data);
+			response.getOutputStream().flush();
 		} else {
 			notPageView(httpResponseCode);
 		}
@@ -63,8 +63,8 @@ public class ErrorView {
 				.append("</BODY></HTML>\r\n")
 				.toString();
 		response.setSendHeader(request.getHttpVersion(), httpResponseCode.getValue(), body.length());
-		response.getOuter().write(body);
-		response.getOuter().flush();
+		response.getWriter().write(body);
+		response.getWriter().flush();
 	}
 
 }

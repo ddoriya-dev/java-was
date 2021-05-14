@@ -2,9 +2,8 @@
  * @(#) WasValidatorTest.java 2021. 05. 14.
  *
  */
-package com.ddoriya.test;
+package com.ddoriya.was;
 
-import com.ddoriya.was.WebApplicationValidator;
 import com.ddoriya.was.util.FileResourcesUtils;
 import com.ddoriya.was.util.JsonUtils;
 import org.json.JSONObject;
@@ -32,7 +31,7 @@ public class WebApplicationValidatorTest {
 
 	@Test
 	@DisplayName("부모 path가 있는지 테스트")
-	public void parent_path_valid_test(){
+	public void parent_path_valid_test() {
 		String url1 = "/a/b/c";
 		String url2 = "/a";
 		assertThat(WebApplicationValidator.isParentPathValid(url1)).isTrue();
@@ -41,7 +40,7 @@ public class WebApplicationValidatorTest {
 
 	@Test
 	@DisplayName("파일에 exe 확장자가 존재하는지 테스트")
-	public void file_exe_Extension_valid_test(){
+	public void file_exe_Extension_valid_test() {
 		String fileName1 = "test.exe";
 		String fileName2 = "test.html";
 		assertThat(WebApplicationValidator.isExeExtensionValid(fileName1)).isTrue();
@@ -50,8 +49,8 @@ public class WebApplicationValidatorTest {
 
 	@Test
 	@DisplayName("JSON 파일이 아닐경우 예외처리 테스트")
-	public void json_file_Extension_valid_test(){
-		assertThatThrownBy(()-> JsonUtils.parseJSONFile("index.html"))
+	public void json_file_Extension_valid_test() {
+		assertThatThrownBy(() -> JsonUtils.parseJSONFile("index.html"))
 				.isInstanceOf(IOException.class);
 	}
 
@@ -59,7 +58,7 @@ public class WebApplicationValidatorTest {
 	@DisplayName("JSON 파일 정상 체크")
 	public void json_file_valid_test() throws URISyntaxException {
 		String configFile = FileResourcesUtils.getStrFromResource(CONFIG_FILE_NAME);
-		assertThatCode(()-> JsonUtils.parseJSONFile(configFile)).doesNotThrowAnyException();
+		assertThatCode(() -> JsonUtils.parseJSONFile(configFile)).doesNotThrowAnyException();
 	}
 
 	@Test

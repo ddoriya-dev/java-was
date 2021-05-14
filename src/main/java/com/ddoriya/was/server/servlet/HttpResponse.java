@@ -16,26 +16,26 @@ import java.util.Date;
  * @author 이상준
  */
 public class HttpResponse {
-	private Writer outer;
-	private OutputStream raw;
+	private Writer writer;
+	private OutputStream outputStream;
 
 	private String contentType = "text/html; charset=utf-8";
 
 	public HttpResponse(Socket connection) throws IOException {
-		raw = new BufferedOutputStream(connection.getOutputStream());
-		outer = new OutputStreamWriter(raw);
+		outputStream = new BufferedOutputStream(connection.getOutputStream());
+		writer = new OutputStreamWriter(outputStream);
 	}
 
-	public Writer getOuter() {
-		return outer;
+	public Writer getWriter() {
+		return writer;
 	}
 
-	public OutputStream getRaw() {
-		return raw;
+	public OutputStream getOutputStream() {
+		return outputStream;
 	}
 
 	public void writerClose() throws IOException {
-		outer.close();
+		writer.close();
 	}
 
 	public HttpResponse setContentType(String contentType) {
@@ -46,22 +46,22 @@ public class HttpResponse {
 	public void setSendHeader(String version, String responseCode, int length)
 			throws IOException {
 		if (version.startsWith("HTTP/")) {
-			outer.write("HTTP/1.1 " + responseCode + "\r\n");
+			writer.write("HTTP/1.1 " + responseCode + "\r\n");
 			Date now = new Date();
-			outer.write("Date: " + now + "\r\n");
-			outer.write("Server: JHTTP 2.0\r\n");
-			outer.write("Content-length: " + length + "\r\n");
-			outer.write("Content-type: " + contentType + "\r\n\r\n");
-			outer.flush();
+			writer.write("Date: " + now + "\r\n");
+			writer.write("Server: JHTTP 2.0\r\n");
+			writer.write("Content-length: " + length + "\r\n");
+			writer.write("Content-type: " + contentType + "\r\n\r\n");
+			writer.flush();
 		}
 	}
 
 	public void setSendHeader(String responseCode) throws IOException {
-		outer.write("HTTP/1.1 " + responseCode + "\r\n");
+		writer.write("HTTP/1.1 " + responseCode + "\r\n");
 		Date now = new Date();
-		outer.write("Date: " + now + "\r\n");
-		outer.write("Server: JHTTP 2.0\r\n");
-		outer.write("Content-type: " + contentType + "\r\n\r\n");
-		outer.flush();
+		writer.write("Date: " + now + "\r\n");
+		writer.write("Server: JHTTP 2.0\r\n");
+		writer.write("Content-type: " + contentType + "\r\n\r\n");
+		writer.flush();
 	}
 }

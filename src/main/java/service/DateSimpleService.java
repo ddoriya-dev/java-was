@@ -19,7 +19,7 @@ public class DateSimpleService implements SimpleServlet {
 	//브라우저에 현재 시간을 출력한다.
 	@Override
 	public void service(HttpRequest request, HttpResponse response) throws Exception {
-		Writer writer = response.getOuter();
+		Writer writer = response.getWriter();
 		writer.write(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 	}
 }

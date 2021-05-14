@@ -17,7 +17,7 @@ public class Hello implements SimpleServlet {
 
 	@Override
 	public void service(HttpRequest request, HttpResponse response) throws Exception {
-		Writer writer = response.getOuter();
+		Writer writer = response.getWriter();
 		writer.write("Hello, ");
 		writer.write(request.getParameter("name"));
 	}
