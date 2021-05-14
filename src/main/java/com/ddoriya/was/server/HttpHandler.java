@@ -1,5 +1,6 @@
 /*
  * @(#) HttpHandler.java 2021. 05. 13.
+ *
  */
 package com.ddoriya.was.server;
 
@@ -7,7 +8,6 @@ import com.ddoriya.was.WasValidator;
 import com.ddoriya.was.constants.HttpMethodCode;
 import com.ddoriya.was.constants.HttpResponseCode;
 import com.ddoriya.was.constants.WebConfigConstants;
-import com.ddoriya.was.server.service.Hello;
 import com.ddoriya.was.server.servlet.HttpRequest;
 import com.ddoriya.was.server.servlet.HttpResponse;
 import com.ddoriya.was.server.servlet.URLMapper;

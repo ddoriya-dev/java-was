@@ -1,7 +1,6 @@
 /*
  * @(#) JsonUtil.java 2021. 05. 12.
  *
- * Copyright 2021. leeSangJun. All rights Reserved.
  */
 package com.ddoriya.was.util;
 

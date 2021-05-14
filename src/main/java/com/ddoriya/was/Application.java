@@ -1,5 +1,5 @@
 /*
- * @(#) WebApplication.java 2021. 05. 12.
+ * @(#) Application.java 2021. 05. 12.
  *
  */
 package com.ddoriya.was;

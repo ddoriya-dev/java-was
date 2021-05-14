@@ -1,11 +1,9 @@
 /*
  * @(#) WasValidator.java 2021. 05. 12.
  *
- * Copyright 2021. PlayD Corp. All rights Reserved.
  */
 package com.ddoriya.was;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 import org.json.JSONObject;
 
 import java.io.File;
