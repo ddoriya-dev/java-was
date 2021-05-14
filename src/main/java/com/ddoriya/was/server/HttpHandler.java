@@ -84,13 +84,14 @@ public class HttpHandler implements Runnable {
 			case HttpMethodCode.GET:
 				get();
 				break;
-			case HttpMethodCode.POST:
+			case HttpMethodCode.POST: //TODO 추후 method code 에 따른 분기를 위해 명시.
 			case HttpMethodCode.HEAD:
 			case HttpMethodCode.PUT:
 			case HttpMethodCode.PATCH:
 			case HttpMethodCode.DELETE:
 			case HttpMethodCode.OPTIONS:
 			case HttpMethodCode.TRACE:
+			default:
 				new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
 				break;
 		}
