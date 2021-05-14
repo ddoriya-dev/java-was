@@ -1,9 +1,12 @@
-# java-was
-java Was 
+# WebApplicationServer
+> 이상준
 
-### HTTP/1.1 WebApplicationServer
+# 주요기능
+- HTTP/1.1 WebApplicationServer 서버 생성
+- SimpleServlet 따른 Service 생성
+
 ##Config 목록
-대상 config : http-conf.json
+> 대상 config : http-conf.json
 ~~~
 {
   "virtualServers": [
@@ -29,24 +32,39 @@ java Was
   ]
 }
 ~~~
-virtualServers : 호스트 서버를 추가한다. (해당부분은 여러대의 포트를 생성할수있다.)
-virtualServers.port : was가 생성되는 포트
-virtualHosts : 가상서버 호스트의 입력값 (해당 도메인과 documentRoot 등 스펙을 여러대 가능하다.)
-virtualHosts.serverName : 도메인 서버호스트
-virtualHosts.documentRoot : 도메인 서버 Root 경로
-virtualHosts.errorDocument_403 : 403 페이지 html
-virtualHosts.errorDocument_404 : 404 페이지 html
-virtualHosts.errorDocument_500 : 500 페이지 html
+* virtualServers : 호스트 서버를 추가한다. (해당부분은 여러대의 포트를 생성할수있다.)
+* virtualServers.port : was가 생성되는 포트
+* virtualHosts : 가상서버 호스트의 입력값 (해당 도메인과 documentRoot 등 스펙을 여러대 가능하다.)
+* virtualHosts.serverName : 도메인 서버호스트
+* virtualHosts.documentRoot : 도메인 서버 Root 경로
+* virtualHosts.errorDocument_403 : 403 페이지 html
+* virtualHosts.errorDocument_404 : 404 페이지 html
+* virtualHosts.errorDocument_500 : 500 페이지 html
 
-##구현 순서
-1. WebApplicationServer 생성하여 Server.start() 진행
-2. 위 해당 config을 읽어 WebApplicationServer 생성
-3. Was 서버의 포트를 생성되었으며 클라이언트 응답을 대기한다.
+##서버 생성 순서
+*  WebApplicationServer 생성하여 Server.start() 진행
+*  위 해당 config을 읽어 WebApplicationServer 생성
+*  Was 서버의 포트를 생성되었으며 클라이언트 응답을 대기한다.
 ~~~
 [INFO ](com.ddoriya.was.server.HttpContainer:43) Accepting connections on port : 8081
 [INFO ](com.ddoriya.was.server.HttpContainer:43) Accepting connections on port : 8082
 ~~~
 
 ##매핑 URL
+* URL , Class 위치
+~~~
+/Hello", "Hello"
+/service.Hello", "service.Hello"
+/date", "service.DateSimpleService"
+~~~
 
-
+## 기능 목록
+* http-config 내용을 읽는다.
+* http 서버를 생성한다.
+* documentRoot 의 경로로 진행한다.
+* /Hello 요청시 name의 parameter값을 받아 화면에 입력한다.
+* /service.Hello 요청시 name의 parameter값을 받아 화면에 입력한다.
+* /date 요청시 현재 시간을 출력한다.
+* was 서버의 / 요청시 index.html 를 자동 매핑되어 생성된다.
+* Error 요청에 따라 403, 404, 500 구분하여 출력된다. 
+* was서버를 사용시 SimpleServlet 상속하여 Service 를 구현한다.
