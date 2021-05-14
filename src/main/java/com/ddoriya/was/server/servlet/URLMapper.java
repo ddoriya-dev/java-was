@@ -16,9 +16,6 @@ import java.util.Map;
  */
 public class URLMapper {
 	private static Logger logger = LoggerFactory.getLogger(URLMapper.class.getName());
-
-	private final String DEFALUT_PACKAGE = "com.ddoriya.was";
-
 	private Map<String, String> mappingUrlMap;
 
 	public URLMapper() {
@@ -44,7 +41,7 @@ public class URLMapper {
 	private void invoke(String url, HttpRequest request, HttpResponse response) throws Exception {
 		response.setSendHeader(HttpResponseCode.SC_OK.getValue());
 
-		String className = String.format("%s.%s", DEFALUT_PACKAGE, mappingUrlMap.get(getRemoveParameterUrl(url)));
+		String className = mappingUrlMap.get(getRemoveParameterUrl(url));
 		Class<?> cls = Class.forName(className);
 		Object obj = cls.newInstance();
 		Method method = cls.getMethod("service", HttpRequest.class, HttpResponse.class);

@@ -2,7 +2,7 @@
  * @(#) HelloView.java 2021. 05. 13.
  *
  */
-package com.ddoriya.was;
+package service;
 
 import com.ddoriya.was.server.servlet.HttpRequest;
 import com.ddoriya.was.server.servlet.HttpResponse;

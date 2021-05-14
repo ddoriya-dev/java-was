@@ -37,11 +37,11 @@ public class HttpHandler implements Runnable {
 	private String rootPath;
 
 	public HttpHandler(JSONObject config, Socket connection, URLMapper urlMapper) {
-		if (config != null) {
-			this.config = config;
-		} else {
+		if (config == null) {
 			throw new IllegalArgumentException("is not virtualHosts");
 		}
+
+		this.config = config;
 		this.connection = connection;
 		this.urlMapper = urlMapper;
 	}
