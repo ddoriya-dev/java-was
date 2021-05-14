@@ -32,8 +32,8 @@ public class HttpHandler implements Runnable {
 	private String indexFileName = "index.html";
 	private Socket connection;
 	private URLMapper urlMapper;
-	private HttpRequest httpRequest;
-	private HttpResponse httpResponse;
+	private HttpRequest request;
+	private HttpResponse response;
 	private String rootPath;
 
 	public HttpHandler(JSONObject config, Socket connection, URLMapper urlMapper) {
@@ -49,16 +49,16 @@ public class HttpHandler implements Runnable {
 	@Override
 	public void run() {
 		try {
-			httpRequest = new HttpRequest(connection, config);
-			httpResponse = new HttpResponse(connection);
+			request = new HttpRequest(connection, config);
+			response = new HttpResponse(connection);
 
-			logger.info("{} : {}", connection.getRemoteSocketAddress(), httpRequest.getRequestList().toString());
+			logger.info("{} : {}", connection.getRemoteSocketAddress(), request.getRequestList().toString());
 
-			if (httpRequest.isHttpConfig()) {
-				this.rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
+			if (request.isHttpConfig()) {
+				this.rootPath = request.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
 				getInitializedRouter();
 			} else {
-				new ErrorView(httpRequest, httpResponse).errorPageView(null, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
+				new ErrorView(request, response).errorPageView(null, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
 			}
 
 		} catch (IOException ex) {
@@ -75,7 +75,7 @@ public class HttpHandler implements Runnable {
 	}
 
 	private void getInitializedRouter() throws IOException {
-		switch (httpRequest.getHttpMethod()) {
+		switch (request.getHttpMethod()) {
 			case HttpMethodCode.GET:
 				get();
 				break;
@@ -86,44 +86,44 @@ public class HttpHandler implements Runnable {
 			case HttpMethodCode.DELETE:
 			case HttpMethodCode.OPTIONS:
 			case HttpMethodCode.TRACE:
-				String rootPath = httpRequest.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
-				new ErrorView(httpRequest, httpResponse).errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
+				String rootPath = request.getJsonHttpConfig().getString(WebConfigConstants.DOCUMENT_ROOT);
+				new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_NOT_IMPLEMENTED);
 				break;
 		}
 
-		httpResponse.writerClose();
+		response.writerClose();
 	}
 
 	private void get() throws IOException {
 		try {
-			String url = httpRequest.getHttpUrl();
+			String url = request.getHttpUrl();
 			if (url.endsWith("/")) {
 				url += indexFileName;
 			}
 
 			if (urlMapper.checkMappingUrl(url)) {
-				urlMapper.call(url, httpRequest, httpResponse);
+				urlMapper.call(url, request, response);
 			} else {
 				File file = new File(rootPath, url.substring(1));
 				if (WasValidator.isExeExtensionValid(file.getName()) || WasValidator.isParentPathValid(url)) {
-					new ErrorView(httpRequest, httpResponse).errorPageView(rootPath, HttpResponseCode.SC_FORBIDDEN);
+					new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_FORBIDDEN);
 					return;
 				} else if (!WasValidator.isFileAuth(rootPath, file)) {
-					new ErrorView(httpRequest, httpResponse).errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
+					new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
 					return;
 				}
 
 				String contentType = URLConnection.getFileNameMap().getContentTypeFor(url);
 				byte[] theData = Files.readAllBytes(file.toPath());
-				httpResponse.setContentType(contentType)
-						.setSendHeader(httpRequest.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
-				httpResponse.getRaw().write(theData);
-				httpResponse.getRaw().flush();
+				response.setContentType(contentType)
+						.setSendHeader(request.getHttpVersion(), HttpResponseCode.SC_OK.getValue(), theData.length);
+				response.getRaw().write(theData);
+				response.getRaw().flush();
 			}
 
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			new ErrorView(httpRequest, httpResponse).errorPageView(rootPath, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
+			new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 

@@ -8,5 +8,5 @@ package com.ddoriya.was.server.servlet;
  * @author 이상준
  */
 public interface SimpleServlet {
-	public void service(HttpRequest req, HttpResponse res) throws Exception;
+	public void service(HttpRequest request, HttpResponse response) throws Exception;
 }

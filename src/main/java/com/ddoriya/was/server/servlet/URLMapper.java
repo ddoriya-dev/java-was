@@ -25,8 +25,8 @@ public class URLMapper {
 		setMapper();
 	}
 
-	public void call(String url, HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
-		invoke(url, httpRequest, httpResponse);
+	public void call(String url, HttpRequest request, HttpResponse response) throws Exception {
+		invoke(url, request, response);
 	}
 
 	public boolean checkMappingUrl(String url) {
@@ -40,14 +40,14 @@ public class URLMapper {
 		mappingUrlMap.put("/service.Hello", "Hello");
 	}
 
-	private void invoke(String url, HttpRequest httpRequest, HttpResponse httpResponse) throws Exception {
-		httpResponse.setSendHeader(HttpResponseCode.SC_OK.getValue());
+	private void invoke(String url, HttpRequest request, HttpResponse response) throws Exception {
+		response.setSendHeader(HttpResponseCode.SC_OK.getValue());
 
 		String className = String.format("%s.%s", DEFALUT_PACKAGE, mappingUrlMap.get(getRemoveParameterUrl(url)));
 		Class<?> cls = Class.forName(className);
 		Object obj = cls.newInstance();
 		Method method = cls.getMethod("service", HttpRequest.class, HttpResponse.class);
-		method.invoke(obj, httpRequest, httpResponse);
+		method.invoke(obj, request, response);
 	}
 
 	private String getRemoveParameterUrl(String url) {

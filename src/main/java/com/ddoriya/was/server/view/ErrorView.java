@@ -22,30 +22,30 @@ import java.nio.file.Files;
 public class ErrorView {
 	private static Logger logger = LoggerFactory.getLogger(ErrorView.class.getName());
 
-	private HttpRequest httpRequest;
-	private HttpResponse httpResponse;
+	private HttpRequest request;
+	private HttpResponse response;
 
-	public ErrorView(HttpRequest httpRequest, HttpResponse httpResponse) {
-		this.httpRequest = httpRequest;
-		this.httpResponse = httpResponse;
+	public ErrorView(HttpRequest request, HttpResponse response) {
+		this.request = request;
+		this.response = response;
 	}
 
 	public void errorPageView(String rootPath, HttpResponseCode httpResponseCode) throws IOException {
-		logger.error("HOSTNAME : {}:{} HTTP STATUS CODE : {}", httpRequest.getHostName(), httpRequest.getPort(), httpResponseCode.getValue());
-		if (rootPath == null || WasValidator.isJsonKeyNullValid(httpRequest.getJsonHttpConfig(), httpResponseCode.getDocument())) {
+		logger.error("HOSTNAME : {}:{} HTTP STATUS CODE : {}", request.getHostName(), request.getPort(), httpResponseCode.getValue());
+		if (rootPath == null || WasValidator.isJsonKeyNullValid(request.getJsonHttpConfig(), httpResponseCode.getDocument())) {
 			notPageView(httpResponseCode);
 			return;
 		}
 
-		String errorDocumentFile = httpRequest.getJsonHttpConfig().getString(httpResponseCode.getDocument());
+		String errorDocumentFile = request.getJsonHttpConfig().getString(httpResponseCode.getDocument());
 		File errorViewFile = new File(rootPath, errorDocumentFile);
 		if (WasValidator.isFileAuth(rootPath, errorViewFile)) {
 			String contentType = URLConnection.getFileNameMap().getContentTypeFor(errorViewFile.getPath());
 			byte[] data = Files.readAllBytes(errorViewFile.toPath());
-			httpResponse.setContentType(contentType)
-					.setSendHeader(httpRequest.getHttpVersion(), httpResponseCode.getValue(), data.length);
-			httpResponse.getRaw().write(data);
-			httpResponse.getRaw().flush();
+			response.setContentType(contentType)
+					.setSendHeader(request.getHttpVersion(), httpResponseCode.getValue(), data.length);
+			response.getRaw().write(data);
+			response.getRaw().flush();
 		} else {
 			notPageView(httpResponseCode);
 		}
@@ -62,9 +62,9 @@ public class ErrorView {
 				.append(httpResponseCode.getValue() + "</H1>\r\n")
 				.append("</BODY></HTML>\r\n")
 				.toString();
-		httpResponse.setSendHeader(httpRequest.getHttpVersion(), httpResponseCode.getValue(), body.length());
-		httpResponse.getOut().write(body);
-		httpResponse.getOut().flush();
+		response.setSendHeader(request.getHttpVersion(), httpResponseCode.getValue(), body.length());
+		response.getOut().write(body);
+		response.getOut().flush();
 	}
 
 }
