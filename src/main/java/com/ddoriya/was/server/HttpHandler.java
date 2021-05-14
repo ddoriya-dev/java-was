@@ -4,7 +4,7 @@
  */
 package com.ddoriya.was.server;
 
-import com.ddoriya.was.WasValidator;
+import com.ddoriya.was.WebApplicationValidator;
 import com.ddoriya.was.constants.HttpMethodCode;
 import com.ddoriya.was.constants.HttpResponseCode;
 import com.ddoriya.was.constants.WebConfigConstants;
@@ -105,10 +105,10 @@ public class HttpHandler implements Runnable {
 				urlMapper.call(url, request, response);
 			} else {
 				File file = new File(rootPath, url.substring(1));
-				if (WasValidator.isExeExtensionValid(file.getName()) || WasValidator.isParentPathValid(url)) {
+				if (WebApplicationValidator.isExeExtensionValid(file.getName()) || WebApplicationValidator.isParentPathValid(url)) {
 					new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_FORBIDDEN);
 					return;
-				} else if (!WasValidator.isFileAuth(rootPath, file)) {
+				} else if (!WebApplicationValidator.isFileAuth(rootPath, file)) {
 					new ErrorView(request, response).errorPageView(rootPath, HttpResponseCode.SC_NOT_FOUND);
 					return;
 				}

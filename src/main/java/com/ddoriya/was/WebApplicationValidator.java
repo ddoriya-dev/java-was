@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * @author 이상준
  */
-public class WasValidator {
+public class WebApplicationValidator {
 	public static boolean isFileAuth(String rootPath, File file) throws IOException {
 		return file.canRead() && file.getCanonicalPath().replaceAll("\\\\", "/").startsWith(rootPath);
 	}
@@ -37,6 +37,6 @@ public class WasValidator {
 	}
 
 	public static boolean isJsonKeyNullValid(JSONObject httpConfig, String key) {
-		return httpConfig.get(key) == null;
+		return !httpConfig.has(key);
 	}
 }

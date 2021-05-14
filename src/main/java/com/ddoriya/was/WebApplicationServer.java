@@ -6,7 +6,6 @@ package com.ddoriya.was;
 
 import com.ddoriya.was.constants.WebConfigConstants;
 import com.ddoriya.was.server.HttpContainer;
-import com.ddoriya.was.util.FileResourcesUtils;
 import com.ddoriya.was.util.JsonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * @author 이상준
@@ -24,10 +22,17 @@ public class WebApplicationServer {
 
 	private static final String CONFIG_FILE_NAME = "http-conf.json";
 	private JSONObject httpConfig;
+	private String configFile;
 
-	public WebApplicationServer() throws URISyntaxException, IOException {
-		String fileName = FileResourcesUtils.getStrFromResource(CONFIG_FILE_NAME);
-		this.httpConfig = JsonUtils.parseJSONFile(fileName);
+	public WebApplicationServer(String configFile) {
+		try {
+			this.configFile = configFile;
+			this.httpConfig = JsonUtils.parseJSONFile(configFile);
+		} catch (IOException ie) {
+			logger.error("not json file...", ie);
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	public void start() {

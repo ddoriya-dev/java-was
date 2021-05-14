@@ -79,7 +79,14 @@ public class HttpRequest {
 	}
 
 	public String getHostName() {
-		String httpHost = requestList.get(1);
+		String httpHost = null;
+		for (String host : requestList) {
+			if (host.startsWith("Host")) {
+				httpHost = host;
+				break;
+			}
+		}
+
 		if (httpHost.contains(HOST)) {
 			String[] host = httpHost.split(":");
 			return host[1].trim();

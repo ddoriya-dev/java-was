@@ -4,7 +4,7 @@
  */
 package com.ddoriya.was.server.view;
 
-import com.ddoriya.was.WasValidator;
+import com.ddoriya.was.WebApplicationValidator;
 import com.ddoriya.was.constants.HttpResponseCode;
 import com.ddoriya.was.server.servlet.HttpRequest;
 import com.ddoriya.was.server.servlet.HttpResponse;
@@ -32,14 +32,14 @@ public class ErrorView {
 
 	public void errorPageView(String rootPath, HttpResponseCode httpResponseCode) throws IOException {
 		logger.error("HOSTNAME : {}:{} HTTP STATUS CODE : {}", request.getHostName(), request.getPort(), httpResponseCode.getValue());
-		if (rootPath == null || WasValidator.isJsonKeyNullValid(request.getJsonHttpConfig(), httpResponseCode.getDocument())) {
+		if (rootPath == null || WebApplicationValidator.isJsonKeyNullValid(request.getJsonHttpConfig(), httpResponseCode.getDocument())) {
 			notPageView(httpResponseCode);
 			return;
 		}
 
 		String errorDocumentFile = request.getJsonHttpConfig().getString(httpResponseCode.getDocument());
 		File errorViewFile = new File(rootPath, errorDocumentFile);
-		if (WasValidator.isFileAuth(rootPath, errorViewFile)) {
+		if (WebApplicationValidator.isFileAuth(rootPath, errorViewFile)) {
 			String contentType = URLConnection.getFileNameMap().getContentTypeFor(errorViewFile.getPath());
 			byte[] data = Files.readAllBytes(errorViewFile.toPath());
 			response.setContentType(contentType)
